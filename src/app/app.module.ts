@@ -1,18 +1,36 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { FormioModule, FormioAppConfig, FormioService } from 'angular-formio';
+import { NgModule, Injector } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { RatingWrapperComponent } from './rating-wrapper/rating-wrapper.component';
+import { registerRatingComponent } from './rating-wrapper/rating-wrapper.formio';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    RatingWrapperComponent
   ],
   imports: [
+    FormioModule,
     BrowserModule,
     AppRoutingModule
   ],
-  providers: [],
-  bootstrap: [AppComponent]
+  providers: [{
+    provide: FormioAppConfig,
+    useValue: {
+      appUrl: 'http://localhost:4200/api/v1',
+      apiUrl: 'http://localhost:4200/api/v1',
+    }
+  }],
+  bootstrap: [AppComponent],
+  entryComponents: [
+    RatingWrapperComponent
+  ]
 })
-export class AppModule { }
+export class AppModule {
+  constructor(injector: Injector) {
+    registerRatingComponent(injector);
+  }
+}
