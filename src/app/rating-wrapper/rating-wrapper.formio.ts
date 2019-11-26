@@ -1,6 +1,10 @@
 import { Injector } from '@angular/core';
-import { FormioCustomComponentInfo, registerCustomFormioComponent } from 'angular-formio';
+import { FormioCustomComponentInfo, registerCustomFormioComponent, FormBuilderComponent, ExtendedComponentSchema } from 'angular-formio';
 import { RatingWrapperComponent } from './rating-wrapper.component';
+
+interface IForm {
+  components: ExtendedComponentSchema[];
+}
 
 const COMPONENT_OPTIONS: FormioCustomComponentInfo = {
   type: 'myrating', // custom type. Formio will identify the field with this type.
@@ -8,6 +12,7 @@ const COMPONENT_OPTIONS: FormioCustomComponentInfo = {
   title: 'Rating', // Title of the component
   group: 'data', // Build Group
   icon: 'star', // Icon
+  editForm: minimalEditForm,
 //  template: 'input', // Optional: define a template for the element. Default: input
 //  changeEvent: 'valueChange', // Optional: define the changeEvent when the formio updates the value in the state. Default: 'valueChange',
 //  editForm: Components.components.textfield.editForm, // Optional: define the editForm of the field. Default: the editForm of a textfield
@@ -20,4 +25,50 @@ const COMPONENT_OPTIONS: FormioCustomComponentInfo = {
 
 export function registerRatingComponent(injector: Injector) {
   registerCustomFormioComponent(COMPONENT_OPTIONS, RatingWrapperComponent, injector);
+}
+
+export function minimalEditForm(): IForm {
+  return {
+    components: [
+      { key: 'type', type: 'hidden' },
+      {
+        weight: 0,
+        type: 'textfield',
+        input: true,
+        key: 'label',
+        label: 'Label',
+        placeholder: 'Label',
+        validate: {
+          required: true,
+        },
+      },
+      {
+        weight: 10,
+        type: 'textfield',
+        input: true,
+        key: 'key',
+        label: 'Field Code',
+        placeholder: 'Field Code',
+        tooltip: 'The code/key/ID/name of the field.',
+        validate: {
+          required: true,
+          maxLength: 128,
+          pattern: '[A-Za-z]\\w*',
+          patternMessage:
+            'The property name must only contain alphanumeric characters, underscores and should only be started by any letter character.',
+        },
+      },
+      {
+        weight: 20,
+        type: 'textfield',
+        input: true,
+        key: 'customOptions.myOption',
+        label: 'My Custom Option',
+        placeholder: 'My Custom Option',
+        validate: {
+          required: true,
+        },
+      },
+    ],
+  } as IForm;
 }
